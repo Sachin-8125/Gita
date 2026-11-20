@@ -21,7 +21,7 @@ export const config: Config = ConfigSchema.parse(
 );
 
 export const env = {
-    model: process.env.GEMINI_MODEL ?? "gemini-3.5-flash",
+    model: process.env.GEMINI_MODEL ?? "gemini-3.8-flash",
     dryRun: process.env.DRY_RUN !== "false", //safe by default
     allowedRepos: (process.env.ALLOWED_REPOS ?? "").split(",").map((s) => s.trim()).filter(Boolean),
     concurrency: Number(process.env.CONCURRENCY ?? 3),

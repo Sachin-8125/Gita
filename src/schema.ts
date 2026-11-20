@@ -10,7 +10,7 @@ export const TYPES = [
 ] as const;
 export const SEVERITIES = ["critical", "high", "medium", "low"] as const;
 
-export const IssueSchema = z.object({
+export const TriageSchema = z.object({
     type: z.enum(TYPES),
     severity: z.enum(SEVERITIES).nullable(),
     area: z.string().nullable(),
@@ -22,7 +22,7 @@ export const IssueSchema = z.object({
     reasoning: z.string().max(800),
 });
 
-export type Issue = z.infer<typeof IssueSchema>;
+export type Triage = z.infer<typeof TriageSchema>;
 
 export const toolInputSchema = z.object({
     type: "object" as const,
