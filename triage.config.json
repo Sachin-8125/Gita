@@ -1,0 +1,41 @@
+{
+    "confidenceThreshold": 0.6,
+    "duplicateThreshold": 0.85,
+    "assignOwners": false,
+    "areas": [
+        {
+            "name": "api",
+            "description": "REST/GraphQL endpoints, auth, request handling, server errors",
+            "owners": [
+                "alice",
+                "bob"
+            ]
+        },
+        {
+            "name": "frontend",
+            "description": "UI components, rendering, styling, client-side state",
+            "owners": [
+                "carol"
+            ]
+        },
+        {
+            "name": "database",
+            "description": "Schema, migrations, queries, data integrity, performance",
+            "owners": [
+                "bob"
+            ]
+        },
+        {
+            "name": "infra",
+            "description": "CI/CD, Docker, deployment, build tooling",
+            "owners": [
+                "dave"
+            ]
+        },
+        {
+            "name": "docs",
+            "description": "README, guides, examples, API reference",
+            "owners": []
+        }
+    ]
+}
