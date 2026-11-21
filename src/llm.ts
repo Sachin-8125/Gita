@@ -10,15 +10,23 @@ import {
   type Triage,
 } from "./schema.js";
 
-const apiKey = process.env.GEMINI_API_KEY;
+let client: GoogleGenAI | null = null;
 
-if (!apiKey) {
-  throw new Error(
-    "GOOGLE_API_KEY or GEMINI_API_KEY must be configured",
-  );
+function getClient(): GoogleGenAI {
+  if (client) return client;
+
+  const apiKey =
+    process.env.GEMINI_API_KEY ?? process.env.GOOGLE_API_KEY;
+
+  if (!apiKey) {
+    throw new Error(
+      "GOOGLE_API_KEY or GEMINI_API_KEY must be configured",
+    );
+  }
+
+  client = new GoogleGenAI({ apiKey });
+  return client;
 }
-
-const client = new GoogleGenAI({ apiKey });
 
 export interface Candidate {
   number: number;
@@ -115,9 +123,10 @@ export async function classify(
       "Submit the structured triage decision for this issue.",
     parametersJsonSchema: toolInputSchema,
   };
+  const llmClient = getClient();
 
   for (let attempt = 0; attempt < 2; attempt += 1) {
-    const response = await client.models.generateContent({
+    const response = await llmClient.models.generateContent({
       model: env.model,
       contents: buildPrompt(ctx),
       config: {
