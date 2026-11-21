@@ -35,7 +35,7 @@ export interface IssueCtx {
 }
 
 export interface Classified {
-  issue: Triage;
+  triage: Triage;
   usage: {
     input: number;
     output: number;
@@ -154,7 +154,7 @@ export async function classify(
 
     if (parsed.success) {
       return {
-        issue: parsed.data,
+        triage: parsed.data,
         usage,
         ms: Date.now() - startedAt,
       };
