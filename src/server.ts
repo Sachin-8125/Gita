@@ -42,7 +42,12 @@ const app = express();
 app.get(
   "/healthz",
   (_req, res) =>
-    void res.json({ ok: true, dryRun: env.dryRun, model: env.model }),
+    void res.json({
+      ok: true,
+      dryRun: env.dryRun,
+      model: env.model,
+      models: env.models,
+    }),
 );
 
 app.post(

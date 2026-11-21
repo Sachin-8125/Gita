@@ -34,11 +34,12 @@ Copy-Item .env.example .env
 
 ```dotenv
 GEMINI_API_KEY=your-gemini-api-key
+GEMINI_MODEL=gemini-3.8-flash
+GEMINI_MODELS=gemini-3.8-flash,gemini-2.5-flash
 GITHUB_TOKEN=your-github-token
 GITHUB_WEBHOOK_SECRET=your-random-webhook-secret
 ALLOWED_REPOS=owner/repository
 DRY_RUN=true
-GEMINI_MODEL=gemini-3.8-flash
 CONCURRENCY=3
 PORT=3000
 ```

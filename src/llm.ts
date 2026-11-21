@@ -125,54 +125,60 @@ export async function classify(
   };
   const llmClient = getClient();
 
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    const response = await llmClient.models.generateContent({
-      model: env.model,
-      contents: buildPrompt(ctx),
-      config: {
-        systemInstruction: SYSTEM,
-        temperature: 0,
-        maxOutputTokens: 1000,
+  for (const model of env.models) {
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        const response = await llmClient.models.generateContent({
+          model,
+          contents: buildPrompt(ctx),
+          config: {
+            systemInstruction: SYSTEM,
+            temperature: 0,
+            maxOutputTokens: 1000,
 
-        tools: [
-          {
-            functionDeclarations: [submitTriageTool],
+            tools: [
+              {
+                functionDeclarations: [submitTriageTool],
+              },
+            ],
+
+            toolConfig: {
+              functionCallingConfig: {
+                mode: FunctionCallingConfigMode.ANY,
+                allowedFunctionNames: ["submit_triage"],
+              },
+            },
           },
-        ],
+        });
 
-        toolConfig: {
-          functionCallingConfig: {
-            mode: FunctionCallingConfigMode.ANY,
-            allowedFunctionNames: ["submit_triage"],
-          },
-        },
-      },
-    });
+        usage.input += response.usageMetadata?.promptTokenCount ?? 0;
+        usage.output +=
+          response.usageMetadata?.candidatesTokenCount ?? 0;
 
-    usage.input += response.usageMetadata?.promptTokenCount ?? 0;
-    usage.output +=
-      response.usageMetadata?.candidatesTokenCount ?? 0;
+        const functionCall = response.functionCalls?.find(
+          (call) => call.name === "submit_triage",
+        );
 
-    const functionCall = response.functionCalls?.find(
-      (call) => call.name === "submit_triage",
-    );
+        const parsed = TriageSchema.safeParse(
+          functionCall?.args ?? null,
+        );
 
-    const parsed = TriageSchema.safeParse(
-      functionCall?.args ?? null,
-    );
+        if (parsed.success) {
+          return {
+            triage: parsed.data,
+            usage,
+            ms: Date.now() - startedAt,
+          };
+        }
 
-    if (parsed.success) {
-      return {
-        triage: parsed.data,
-        usage,
-        ms: Date.now() - startedAt,
-      };
+        lastError = parsed.error;
+      } catch (error) {
+        lastError = error;
+      }
     }
-
-    lastError = parsed.error;
   }
 
   throw new Error(
-    `Model returned invalid triage output twice: ${String(lastError)}`,
+    `All configured Gemini models failed: ${String(lastError)}`,
   );
 }
